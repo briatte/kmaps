@@ -1,3 +1,6 @@
+# what: map cancer mortality rates for women in EU-27 countries in 2008
+# who/when: François Briatte, 2011-04-09
+
 # libraries
 library(maptools)
 library(RColorBrewer)
