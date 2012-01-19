@@ -7,7 +7,7 @@ library(RColorBrewer)
 library(classInt)
 library(reshape)
 
-setwd("~/Desktop/kmaps")
+setwd("~/Documents/Research/Cancer/kmaps")
 
 # load data
 data <- read.table("ecodata.csv",header=T,sep=",")
@@ -42,4 +42,4 @@ matched.colours[is.na(matched.colours)] <- "#EEEEEE"
 par(mar=c(0,0,0,0))
 plot(europe,col=matched.colours,xlim=xcoord,ylim=ycoord)
 # legend
-legend(-10,70,legend=names(attr(colcode,"table")), fill=attr(colcode, "palette"), cex=0.75, bty="n")
+legend(xcoord[1],ycoord[2],legend=names(attr(colcode,"table")), fill=attr(colcode, "palette"), cex=0.75, bty="n")
