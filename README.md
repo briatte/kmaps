@@ -2,7 +2,7 @@
 
 Maps for European country-level data.
 
-Currently breaks at line of `code.r` with the message: `d` -- even though `gpclib` is installed and all required libraries are loaded.
+Currently breaks at line 19 of `code.r` with the message: `ERROR: could not find function "fortify.SpatialPolygonsDataFrame"` -- even though `gpclib` is installed and all required libraries are loaded.
 
 ## Data
 
