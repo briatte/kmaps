@@ -1,0 +1,120 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[colorlinks=true]{hyperref}
+\usepackage{subfigure}
+\usepackage{geometry} 
+	\geometry{a4paper, textwidth=5.5in, textheight=9.6in, marginparwidth=.6in}
+	\setlength\parindent{0em}
+  \setlength\parskip{1em}
+
+\title{\texttt{kmap()}}
+	\author{François Briatte}
+	\date{\today}
+
+\begin{document}
+
+	\maketitle
+
+	\section*{Description}
+	
+	This is a code snippet that I use to produce maps like the ones on the next page. My current research relies extensively on European health data, for which I provide example data and maps. It might be of help to anyone working on European country-level data, which is fairly common in comparative politics.
+  
+  The code writes the \texttt{kmap()} function to work with the associated dataset and shapefiles; see \texttt{README} for a description of both. It relies on ISO-2 alphabetical country codes to match them together.  I still need to write a full-fledged function to make the data and graphics completely flexible.
+
+	\section*{Use}
+	
+	You will need \texttt{R}, your data and a few ESRI shapefiles that can be read with the \texttt{maptools} package.
+
+  I am working on an improved version of the code that would use \texttt{ggplot2} to draw the maps with more gusta.
+
+<<results=hide,echo=false>>=
+setwd("~/Documents/Research/Code/Projects/kmaps") #! edit to reflect local path
+
+library(maptools); if (!rgeosStatus()) gpclibPermit() # returns TRUE
+library(ggplot2)
+library(reshape)
+
+library(RColorBrewer)
+library(classInt)
+
+eco <- subset(read.csv("eco.csv",header=T,sep=","), iso2!="EU27") #; names(eco)
+map <- readShapeSpatial("maps/data/CNTR_RG_60M_2006",proj4string=CRS("+proj=longlat"))
+map <- rename(map, c(CNTR_ID="iso2")) #; summary(map)
+@
+
+The \texttt{kmap} function is coded in one line. It accepts:
+  
+  \begin{itemize}
+    \item \texttt{v}, a variable
+    \item \texttt{q}, a number of quantiles over which to split the data
+    \item \texttt{xcoord} and \texttt{ycoord}, the map coordinates
+  \end{itemize}
+  
+  The map is tentatively centred on the European Union by default. If no quantile is passed to the function, it will output \texttt{q} = 4 quartiles. The intervals are returned by the function in object \texttt{class}.
+
+<<results=hide,echo=false>>=
+kmap <- function(v,q=4,xcoord=c(-5,40),ycoord=c(35,70)) {
+  
+  # quantiles
+  colours <- brewer.pal(q, "YlOrRd")
+  class <- classIntervals(v, q, style="quantile")
+  colcode <- findColours(class, colours)
+
+  # match
+  matched.codes<-match(map$iso2,eco$iso2)
+  matched.colours<-colcode[matched.codes]
+  matched.colours[is.na(matched.colours)] <- "#EEEEEE"
+  
+  # map
+  par(mar=c(0,0,0,0))
+  plot(map,col=matched.colours,xlim=xcoord,ylim=ycoord)
+  
+  # legend
+  legend(2*xcoord[1],ycoord[2],legend=names(attr(colcode,"table")), fill=attr(colcode, "palette"), cex=0.75, bty="n")
+
+  return(class)
+  }
+@
+	
+<<mr_lung_f, fig=true,include=false,echo=true,results=hide>>=
+# Lung cancer mortality rates, females
+kmap(eco$mr_lung_f,q=5) 
+@
+
+<<mr_lung_m, fig=true,include=false,echo=false,results=hide>>=
+# Lung cancer mortality rates, males
+kmap(eco$mr_lung_m,q=5)
+@
+
+The next page shows two examples.
+
+\begin{figure}[htbp]
+	\centering
+	\subfigure[Males]
+	{
+		{%
+			\setlength{\fboxsep}{-.5pt}%
+			\setlength{\fboxrule}{.5pt}%
+			\fbox{\includegraphics[width=.66\textwidth]{note-mr_lung_f.pdf}}%
+		}%
+	}%
+	
+	\subfigure[Females]
+	{
+		{%
+			\setlength{\fboxsep}{-.5pt}%
+			\setlength{\fboxrule}{.5pt}%
+			\fbox{\includegraphics[width=.66\textwidth]{note-mr_lung_m.pdf}}%
+		}%
+	}%
+	
+	\caption{Estimated lung cancer mortality in European countries, 2008. All rates are age-standardised to the European population. Data: European Cancer Observatory. Maps: \textsc{gisco} - Eurostat, European Commission, 2006.}
+	\label{fig:ex1}
+\end{figure}
+
+  \section*{Credits}
+  
+  \href{http://coulmont.com/}{Baptiste Coulmont} assisted with the code, and Éric Verdier made encouraging comments on first drafts.
+
+\end{document}
