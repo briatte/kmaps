@@ -1,14 +1,13 @@
 
 setwd("~/Documents/Research/Code/Projects/kmaps") #! edit to reflect local path
 
-### setRepositories(ind=1:2); install.packages("rgdal") ###
-library(maptools); if (!rgeosStatus()) gpclibPermit() # returns TRUE
+library(maptools); if (!rgeosStatus()) gpclibPermit() # allows fortify method
 library(ggplot2)
+library(RColorBrewer)
 library(reshape)
-#library(grid)
+library(grid)
 
-# scrapped from Osmo Salomaa 
-theme_map = function(size=12)
+theme_map = function(size=12) # scrapped from Osmo Salomaa 
 {
   o = list(axis.line=theme_blank(),
            axis.text.x=theme_blank(),
@@ -21,7 +20,8 @@ theme_map = function(size=12)
            legend.background=theme_rect(fill="white", colour=NA),
            legend.key=theme_rect(colour="white"),
            legend.key.size=unit(1.2, "lines"),
-           legend.position="right",
+           legend.justification=c(0,0), # bottom of box
+           legend.position=c(0,0),      # bottom of picture
            legend.text=theme_text(size=size*0.8),
            legend.title=theme_text(size=size*0.8, face="bold",hjust=0),
            panel.background=theme_blank(),
@@ -35,38 +35,33 @@ theme_map = function(size=12)
            strip.background=theme_rect(fill="grey90",colour="grey50"),
            strip.text.x=theme_text(size=size*0.8),
            strip.text.y=theme_text(size=size*0.8, angle=-90))
-  
   return(structure(o, class="options")) 
 }
 
+# Data.
 eco <- subset(read.csv("eco.csv",header=T,sep=","), iso2!="EU27") #; names(eco)
 map <- readShapeSpatial("maps/data/CNTR_RG_60M_2006",proj4string=CRS("+proj=longlat"))
 map <- rename(map, c(CNTR_ID="iso2")) #; summary(map)
 
-### 
+# Match.
+map@data$id <- rownames(map@data)           # coded by Hadley Wickham (thanks!)
+map.points <- fortify(map, region = "id")   # fixed by Roger Peng (thanks!)
+map.df <- join(map.points,map@data,by="id") # match map and rows
+map.df <- join(map.df,eco, by="iso2")       # match map and data
 
-# issue with fortify method
-# breaks at line 19 on R 2.14.2; used to work with R 2.14.0
-
-# scrapped from Hadley Wickham
-map@data$id <- rownames(map@data)
-###map.points <- fortify.SpatialPolygonsDataFrame(map,region="id")
-map.points <- fortify(map, region = "id")
-
-map.df <- join(map.points,map@data,by="id")
-map.df <- join(map.df,eco, by="iso2")
-
+# Lung cancer mortality rates, males
 plim <- c(min(eco$mr_lung_m),max(eco$mr_lung_m))
 map.df.missing <- subset(map.df,is.na(mr_lung_m))
 mr_lung_m <- ggplot(map.df) + aes(long,lat,group=group,fill=mr_lung_m) + 
+  geom_polygon() + scale_fill_gradient("", limits=plim,low="yellow",high="red") +   
   geom_polygon(data=map.df.missing,aes(long,lat,group=group),fill="lightgrey") +
-  geom_polygon() + geom_path(color="white") + 
   coord_cartesian(xlim = c(-24, 35), ylim = c(34, 72))  +  
-  scale_fill_gradient("", limits=plim,low="yellow",high="red") +
-  theme_map() + opts(aspect.ratio = .54); mr_lung_m
+  geom_path(color="white") + theme_map(); mr_lung_m
 
-mr_lung_m + 
-  geom_hline(aes(yintercept=72), colour="blue") + 
-  geom_hline(aes(yintercept=34),colour="red") + 
-  geom_vline(aes(xintercept=-24), colour="blue") + 
-  geom_vline(aes(xintercept=35),colour="red")
+plim <- c(min(eco$mr_lung_f),max(eco$mr_lung_f))
+map.df.missing <- subset(map.df,is.na(mr_lung_f))
+mr_lung_f <- ggplot(map.df) + aes(long,lat,group=group,fill=mr_lung_f) + 
+  geom_polygon() + scale_fill_gradient("", limits=plim,low="yellow",high="red") +
+  geom_polygon(data=map.df.missing,aes(long,lat,group=group),fill="lightgrey") +
+  coord_cartesian(xlim = c(-24, 35), ylim = c(34, 72))  +  
+  geom_path(color="white") + theme_map(); mr_lung_f

@@ -2,7 +2,8 @@
 
 Maps for European country-level data.
 
-Currently breaks at line 19 of `code.r` with the message: `ERROR: could not find function "fortify.SpatialPolygonsDataFrame"` -- even though `gpclib` is installed and all required libraries are loaded.
+- The `code.r` file is what you probably want to have a look at.
+- The `note` folder holds a Sweave file with code and comments.
 
 ## Data
 
