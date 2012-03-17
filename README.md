@@ -1,17 +1,19 @@
 ## Description
 
-Maps for European country-level data.
+- `code.r` produces maps of European country-level data.
+- `code.Rnw` produces a demo of the results.
 
-- `code.r` is what you probably want to have a look at.
-- `code.Rnw` is a companion document for the code.
+A longer description of the code is provided in its [blog entry][maps].
 
-## Data
+[maps]: http://phnk.com/notes/maps/
 
-- `data/iarc.eco.2008.csv` contains estimates of cancer incidence and mortality for 30 European countries in 2008; source: [European Cancer Observatory][3].
-- `maps/` contains shapefiles produced by EuroGeographics in 2006; source: [European Commission][4].
+## Data sources
 
-[3]: http://eu-cancer.iarc.fr/
-[4]: http://epp.eurostat.ec.europa.eu/portal/page/portal/gisco/popups/references/administrative_units_statistical_units_1
+- Estimates of cancer mortality were retrieved from the [European Cancer Observatory][eco].
+- Shapefiles for geographical regions were retrieved from [GISCO - Eurostat][gisco] at the European Commission.
+
+[eco]: http://eu-cancer.iarc.fr/
+[gisco]: http://epp.eurostat.ec.europa.eu/portal/page/portal/gisco/popups/references/administrative_units_statistical_units_1
 
 ## Codebook
 

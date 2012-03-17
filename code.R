@@ -5,9 +5,9 @@ setwd("~/Documents/Research/Code/Projects/kmaps") #! edit to reflect local path
 library(knitr)
 library(maptools); if (!rgeosStatus()) gpclibPermit() # allows fortify method
 library(ggplot2)
+library(grid)
 library(RColorBrewer)
 library(reshape)
-library(grid)
 
 theme_map = function(size=12) # adapted from Osmo Salomaa 
 {

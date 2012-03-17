@@ -127,6 +127,7 @@ map.df <- join(map.df,eco, by="iso2")       # match map and data
   
   \begin{subfigure}[t]{.45\textheight}
 <<mr_m, cache=TRUE>>=
+# Lung cancer mortality rates, males
 plim <- c(min(eco$mr_m),max(eco$mr_m))
 map.df.missing <- subset(map.df,is.na(mr_m))
 ggplot(map.df) + aes(long,lat,group=group,fill=mr_m) + 
