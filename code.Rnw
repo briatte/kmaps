@@ -60,7 +60,7 @@
 	You will need \texttt{R}, the \texttt{maptools} package to read the maps and join them to the data with the \texttt{fortify} function of the \texttt{gpclib()} library. You will also need \texttt{ggplot2} to draw the maps with maximum gusta.
 
 <<setup, include=FALSE>>=
-setwd("~/Documents/Research/Code/Projects/kmaps") #! edit to reflect local path
+setwd("~/Documents/Code/R/kmaps") #! edit to reflect local path
 
 library(knitr)
 library(maptools); if (!rgeosStatus()) gpclibPermit() # allows fortify method
@@ -102,7 +102,7 @@ theme_map = function(size=12) # adapted from Osmo Salomaa
 
 # Data.
 eco <- subset(read.csv("data/iarc.eco.2008.csv",header=T,sep=","), iso2!="EU27")
-map <- readShapeSpatial("maps/data/CNTR_RG_60M_2006",proj4string=CRS("+proj=longlat"))
+map <- readShapeSpatial("maps/countries/CNTR_RG_60M_2006",proj4string=CRS("+proj=longlat"))
 map <- rename(map, c(CNTR_ID="iso2")) #; summary(map)
 @
 
