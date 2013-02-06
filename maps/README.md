@@ -1,0 +1,1 @@
+Please refer to the [README](countries/readme.txt) file of the `countries` folder for the copyright notice.
